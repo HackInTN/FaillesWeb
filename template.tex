@@ -63,6 +63,7 @@
 	Faille XSS\\
 	CSRF\\
 	Transversal directory\\
+	CRLF\\
 \end{frame}
 
 \begin{frame}{Faille XSS}
@@ -128,7 +129,35 @@
 
 \begin{frame}{Comment la sécuriser ?}
 	Tout simplement : include(\$\_GET['file'] . '.html')\\
-	Limite donc les fichiers à ceux au format HTML
+	Limite donc les fichiers à ceux au format HTML\\
+	Mais ne fonctionne pas si l'on rajoute %00
+\end{frame}
+
+\begin{frame}{Quelle est la solution?}
+	Ne plus utiliser ce type d'inclusion de page
+\end{frame}
+
+\begin{frame}{CRLF}
+	CRLF signifie Carriage Return Line Feed\\
+	Carriage Return : Retour Chariot \textbackslash r\\
+	Line Feed : Saut de ligne \textbackslash n\\
+	Consiste donc à placer des fin de ligne à certains endroits
+\end{frame}
+
+\begin{frame}{Où placer ces caractères}
+	Où?\\
+	Dans l'input des envois de mails de mot de passe oublié\\
+	Le retour a la ligne signife un destinataire supplémentaire\\
+	On peut donc envoyer des mails grâce au site web de la victime
+\end{frame}
+
+\begin{frame}{Son utilité}
+	Envoie deux mails avec le nouveau mot de passe\\
+	mail1@service.com\%0A\%0Dmail2@service.com
+\end{frame}
+
+\begin{frame}{Comment sécuriser?}
+	\$chaine\_secure = str\_replace(array("\textbackslash n","\textbackslash r",PHP\_EOL),'',\$chaine\_utilisateur);
 \end{frame}
 
 \end{document}
